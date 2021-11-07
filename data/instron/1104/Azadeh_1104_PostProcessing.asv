@@ -1,0 +1,15 @@
+%Post processing the Instron data to calculate the Elasticity of the silicone
+%segment
+close all;
+clear all;
+clc;
+%% Load data
+% read.csv('Specimen_RawData_1.csv');
+
+FolderName = ["1mms_0_1.is_tcyclic_RawData","1mms_0_2.is_tcyclic_RawData","1mms_0.is_tcyclic_RawData"];
+for i=1:3
+    FileName1 = append(FolderName(i),"\Specimen_RawData_1.csv");
+    my_field = strcat('T',num2str(i));
+    genvarname(my_field)
+    variable.(my_field) = readtable(FileName1);
+end
