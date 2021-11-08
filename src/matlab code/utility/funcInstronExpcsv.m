@@ -2,15 +2,15 @@ function par_set = funcInstronExpcsv( par_set,exp_case )
 fprintf( 'Loading exp. data %d ... \n',exp_case )
 switch exp_case
     case 1
-        set1=table2cell(readtable('data_1.csv'));
+        set1=table2cell(readtable('data_1.csv','HeaderLines',2));
     case 2
-        set1=table2cell(readtable('data_2.csv'));
+        set1=table2cell(readtable('data_2.csv','HeaderLines',2));
     case 3
-        set1=table2cell(readtable('data_3.csv'));
+        set1=table2cell(readtable('data_3.csv','HeaderLines',2));
     case 4
-        set1=table2cell(readtable('data_4.csv'));
+        set1=table2cell(readtable('data_4.csv','HeaderLines',2));
     case 5
-        set1=table2cell(readtable('data_5.csv'));
+        set1=table2cell(readtable('data_5.csv','HeaderLines',2));
     case 6
         set1=importdata('data_6.txt');
     case 7
@@ -37,7 +37,7 @@ NoLoad=[];
 for j=1:size(set1,2)
     for i =1:size(set1,1)
 %         set1{i,j}
-        NoLoad(i,j)=set1{i,j};
+        NoLoad(i,j)=str2num(set1{i,j});
     end
 end
 

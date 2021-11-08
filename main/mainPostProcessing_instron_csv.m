@@ -89,7 +89,7 @@ sysid_in3=testData.dlength;
 sysid_ou3=testData.df_N;
 sysid_intotal=[sysid_in1;sysid_in2;sysid_in3;];
 sysid_outotal=[sysid_ou1;sysid_ou2;sysid_ou3;];
-% N(N) = 8.263* dl(mm)
+% N = 8.263* dl
 %% 3mms
 close all
 figure
