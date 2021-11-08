@@ -24,7 +24,7 @@ else
     fprintf( 'Data loaded \n' );
 end
 return
-%% train data 
+%% train data 1mms
 train_1=[];train_2=[];valid_1=[];
 testData=par_set.trial1;
 train_1=iddata(testData.dlength/1000,testData.df_N,par_set.Ts);
@@ -60,14 +60,7 @@ return
 comp_k_mat=[8264,8258];%k/m
 comp_b_mat=[2635,2589];%b/m
 save('1mms.mat','comp_b_mat','comp_k_mat');
-%% results 3mms
-comp_k_mat=[8358,8349];%k/m
-comp_b_mat=[972,982];%b/m
-save('3mms.mat','comp_b_mat','comp_k_mat');
-%% results 5mms
-comp_k_mat=[8339,8454];%k/m
-comp_b_mat=[690,636];%b/m
-save('5mms.mat','comp_b_mat','comp_k_mat');
+
 %% lpv MODEL use all data2
 comp_k_mat=[4.784,3.863,2.853,2.231]*1000;
 comp_b_mat=[0.4521,61.44,200.8,259.0];
