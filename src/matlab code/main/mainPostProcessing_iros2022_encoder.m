@@ -49,11 +49,11 @@ if par_set.flag_read_exp==1
     par_set=funcOpenloopExpEncoder(par_set,1);
     par_set=funcOpenloopExpEncoder(par_set,2);
     par_set=funcOpenloopExpEncoder(par_set,3);
-    par_set=funcOpenloopExpEncoder(par_set,4);
-    par_set=funcOpenloopExpEncoder(par_set,5);
-    par_set=funcOpenloopExpEncoder(par_set,6);   
-    par_set=funcOpenloopExpEncoder(par_set,7);     
-    par_set=funcOpenloopExpEncoder(par_set,8);   
+%     par_set=funcOpenloopExpEncoder(par_set,4);
+%     par_set=funcOpenloopExpEncoder(par_set,5);
+%     par_set=funcOpenloopExpEncoder(par_set,6);   
+%     par_set=funcOpenloopExpEncoder(par_set,7);     
+%     par_set=funcOpenloopExpEncoder(par_set,8);   
 %     par_set=funcOpenloopExp(par_set,7);  
 %     save('raw_id_data.mat','par_set');
     fprintf( 'Saved \n' )
@@ -72,8 +72,11 @@ figure
 plot(testData.tip_exp(:,2:4))
 figure
 plot(testData.base_exp(:,2:4))
+figure
+plot(testData.encoder_mm)
 % return
 end
+
 %% plot raw z changes and pressure changes pm
 close all
 figure
