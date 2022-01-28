@@ -17,14 +17,14 @@ class pc_client(object):
     """docstring for pc_client"""
     def __init__(self):
         """ Select use mocap or not"""
-        self.flag_use_mocap=0
+        self.flag_use_mocap=1
         self.p1_off_set_angle=np.deg2rad(240) # rad
         self.l_tri= 0.07 #m
         """ Initiate ZMQ communication"""
         context = zmq.Context()
         self.socket0 = context.socket(zmq.PUB)
         self.socket0.setsockopt(zmq.CONFLATE,True)
-        self.socket0.bind("tcp://10.203.49.136:4444")## PUB pd to Raspi Client
+        self.socket0.bind("tcp://10.203.53.226:4444")## PUB pd to Raspi Client
 
         self.socket1 = context.socket(zmq.PUB)##PUb to Record
         self.socket1.setsockopt(zmq.CONFLATE,True)
@@ -72,14 +72,49 @@ class pc_client(object):
         self.t0=0.0 # timer sec
         self.t_old=0.0 #timer sec
         self.t_new=0.0
+        self.loop_timer=time()
 
 
     def th_pub_raspi_client_pd(self):
         try:
             if self.flag_reset==1:
-                self.step_response(np.array([5.0,5.0,5.0]),5)
-                self.flag_reset=0            
-            self.step_response(np.array([5.0,5.0,5.0]),5)
+                self.step_response(np.array([10.0,0.0,0.0]),5)
+                self.flag_reset=0
+            if self.flag_use_mocap == True:
+                self.array2setswithrotation=self.recv_cpp_socket2()
+            vector_phiTheta=np.array([0., 0.])
+            vector_phiTheta=self.getThetaPhiAndr0FromXYZ()
+            self.x1_old=vector_phiTheta[1]
+            self.x1_t0=vector_phiTheta[1]
+            self.x3_old=vector_phiTheta[0]
+            self.x3_t0=vector_phiTheta[0]
+            self.t0=time()
+            self.t_old=time()
+            # self.step_response(np.array([20.0,10.0,0.0]),5)
+            A_array=np.array([5,5,0])
+            freq_array=np.array([0.05,0.05,0])
+            B_array=np.array([10,5,0])
+            sine_time=30
+            self.sine_response(A_array,freq_array,B_array,sine_time)
+            # self.step_response(np.array([10.0,5.0,0.0]),5)
+            # for p1 in range(10,40,10):
+            #     self.loop_timer=time()
+            #     d=
+            #     p3=p2- dp23
+            #     if p3 > 40:
+            #         p3=40
+            #     if p3 <0.0:
+            #         p3=0.0
+            #     self.openloopStepPressureCtrl(np.array([p1,p2,p3]),20)
+            # for p12 in range(3,40,2):
+            #     self.loop_timer=time()
+            #     self.openloopStepPressureCtrl(np.array([p12,p12,1.0]),4)
+            # for p13 in range(3,40,2):
+            #     self.loop_timer=time()
+            #     self.openloopStepPressureCtrl(np.array([p13,1.0,p13]),4)
+            # print "Done"
+            
+            self.step_response(np.array([10.0,0.0,0.0]),5)
             self.th1_flag=False
             self.th2_flag=False
             exit()
@@ -126,7 +161,7 @@ class pc_client(object):
         phi_rad=np.arctan(tip_camFrame[1]/tip_camFrame[0])
 
         #Calculate theta rad using xyz
-        theta_rad = 2.0*np.sign(tip_camFrame[2])*np.arccos(tip_camFrame[2]/np.sqrt(tip_camFrame[0]*tip_camFrame[0] + tip_camFrame[1]*tip_camFrame[1] + tip_camFrame[2]*tip_camFrame[2]))      
+        theta_rad = 2.0*np.sign(tip_camFrame[2])*np.arccos(tip_camFrame[2]/np.sqrt(tip_camFrame[0]*tip_camFrame[0] + tip_camFrame[0]*tip_camFrame[0] + tip_camFrame[0]*tip_camFrame[0]))      
         return np.array([phi_rad,theta_rad])
 
     def getr0fromPhi(self,tip_camFrame,phi_rad):
@@ -135,7 +170,7 @@ class pc_client(object):
         return r0
 
     def openloopStepPressureCtrl(self,pd_array,step_time):
-        for i in range(int(step_time/0.005)):
+        while time()-self.loop_timer<= step_time:
             vector_phiTheta=np.array([0., 0.])
             phi=0.
             theta=0.
@@ -161,7 +196,7 @@ class pc_client(object):
             tau_x=-(pm3_MPa*(0.5*np.sqrt(3))+ pm1_MPa*(-0.5*np.sqrt(3)))
             tau_y=-(pm1_MPa*(-0.5)+pm2_MPa*(1.0)+pm3_MPa*(-0.5))
 
-            tau_theta-cphi*stheta*tau_x + (-cphi)*tau_y
+            tau_theta=-cphi*stheta*tau_x + (-cphi)*tau_y
             tau_phi=-sphi*stheta*tau_x+cphi*tau_y
             self.tau_array=np.array([tau_x,tau_y,tau_theta,tau_phi])
             self.state_variable_array=np.array([self.x1_current,self.x2_current,self.x3_current,self.x4_current])
@@ -187,9 +222,12 @@ class pc_client(object):
                 sleep(0.005)
 
     def sine_response(self,A_array,freq_array,B_array,sine_time):
-        for i in range(int(sine_time/0.005)):
+        t0=time()
+        t_f=t0+sine_time
+        while time()<t_f:
+            t=time()-t0
             if self.th1_flag:
-                pd_array=A_array*np.cos(2.0*np.pi*freq_array*0.005*i)+B_array
+                pd_array=A_array*np.cos(2.0*np.pi*freq_array*t)+B_array
                 self.send_zipped_socket0(pd_array)
                 sleep(0.005)
 
