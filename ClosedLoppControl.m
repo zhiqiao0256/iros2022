@@ -17,7 +17,7 @@ r2 = da*(sqrt(2)/2)*(e1-e2); %actuator 2 distance vector to backbone [m]
 r3 = da*(sqrt(2)/2)*(-e1-e2); %actuator 3 distance vector to backbone [m]
 r4 = da*(sqrt(2)/2)*(-e1+e2); %actuator 4 distance vector to backbone [m]
 db = (L0/2)*e3; %distance of the tip force (FSR sensor) to the center of mass vector [m]
-A0 = pi*r0^2; % cicular Cross-sectional area [m^2]
+A0 = pi*r0^2; % cicular cross-sectional area [m^2]
 rho = 792; % density (kg/m^3)
 M = rho*A0*J; %material cross-section stiffness per unit length [Nm]
 E = 0.27*10^6; % Young modulus [Pa]
@@ -69,8 +69,8 @@ for i=1:STEPS
 %     D= Bb; %Derivative coefficient matrix
     torq_l_desired = K*(u_desired-u_star); %+D*ut_desired; %desired torque along x-axis on the backbone
 
-    applied_torque_by_actuator= R*(torq_l_desired-torq_l+M*utt_desired-Moment_tip); %[Nm]
-    applied_force_by_actuator_1= applied_torque_by_actuator(2)/(2*da*cos(pi/4));  %[N]
+    applied_torque_by_actuator= R*(torq_l_desired-torq_l+M*utt_desired-Moment_tip); %[Nm], 3x1 vector
+    applied_force_by_actuator_1= applied_torque_by_actuator(2)/(2*da*cos(pi/4));  %[N], scalar
     applied_force_by_actuator_2= applied_torque_by_actuator(2)/(2*da*cos(pi/4)); %[N]
     applied_pressure_by_actuator_1= applied_force_by_actuator_1/A0; %[N/m^2]=[Pa]
     applied_pressure_by_actuator_2= applied_force_by_actuator_2/A0; %[N/m^2]=[Pa]
