@@ -62,6 +62,11 @@ par.tip_exp = NoLoad(1:end,1) ; par.tip_exp(:,2:4) = ( NoLoad(1:end,12:14) - mea
 par.tip_RQ = NoLoad(1:end,1) ; par.tip_RQ(:,2:5) = ( NoLoad(1:end,15:18) ) ;
 par.tip2_exp = NoLoad(1:end,1) ; par.tip2_exp(:,2:4) = ( NoLoad(1:end,19:21) - mean(NoLoad(1:end,5:7)) ) ;
 par.tip2_RQ = NoLoad(1:end,1) ; par.tip2_RQ(:,2:5) = ( NoLoad(1:end,22:25) ) ;
+if size(NoLoad,2)>=26
+par.ud00=NoLoad(1:end,26);
+par.ud10=NoLoad(1:end,27);
+par.ud20=NoLoad(1:end,28);
+end
 switch exp_case
     case 1
         par_set.trial1=par;
