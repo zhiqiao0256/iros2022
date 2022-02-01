@@ -116,7 +116,7 @@ class pc_client(object):
             e3=np.array([[0],[0],[1]])# 3 by 1
             ### Geometric
             L0=0.185
-            L=L*num_of_segments # total length m
+            L=L0*num_of_segments # total length m
             r0=0.075*np.sqrt(2)/2 # radius at the cross-section m
 
             ### need to double check ##
@@ -155,8 +155,11 @@ class pc_client(object):
 
             ### replace of u(t(i)) desired curvature
             u_desired=np.array([[0],[a*np.sin(w*t)],[0]])
-            ut_desired=np.array([[0],[a*w*np.cos(w*t)],[0]])
-            utt_desired=np.array([[0],[-a*(w**2)*np.sin(w*t)],[0]])
+            # ut_desired=np.array([[0],[a*w*np.cos(w*t)],[0]])
+            # utt_desired=np.array([[0],[-a*(w**2)*np.sin(w*t)],[0]])
+
+            ### positive u_desired only
+            u_desired=np.array([[0],[a*np.sin(w*t)],[0]])
             self.u_array[0]=u_desired[0][0]
             self.u_array[1]=ut_desired[1][0]
             self.u_array[2]=utt_desired[2][0]
@@ -194,19 +197,21 @@ class pc_client(object):
                 #New moment
             db=np.array([x_c-x0_c,y_c-y0_c,z_c-z0_c])# 1by3 
             xyzi_minus_xyz0=np.array([xi-x0,yi-y0,zi-z0])
-            Moment_grav=np.cross(db,np.reshape(np.dot(R,Force_gravity),(1,3))).reshape(3,1)            
+            Moment_grav=np.cross(db,np.reshape(Force_gravity,(1,3))).reshape(3,1)            
             Moment_tip=np.cross(xyzi_minus_xyz0,np.reshape(np.dot(R,Force_tip),(1,3))).reshape(3,1)
 
             u=np.array([[0],[kapa],[0]])
-            torq_l=np.dot(Kb,(u-u_star))
+            # torq_l=np.dot(Kb,(u-u_star))
             K=Kb
-            torq_l_desired = np.dot(K,(u_desired-u_star))
+            # torq_l_desired = np.dot(K,(u_desired-u_star))
             # print "k",K,"u",u_desired-u_star,"t",torq_l_desired
             ##Gathering rotation matrix
-            applied_torque_by_actuator= np.dot(R,(torq_l_desired-torq_l+np.dot(M,utt_desired)-Moment_tip))
+            # applied_torque_by_actuator= np.dot(R,(torq_l_desired-torq_l+np.dot(M,utt_desired)-Moment_tip))
+            applied_torque_by_actuator= np.dot(np.dot(R,K),u_desired-u)+Moment_tip+Moment_grav
+            
             # print torq_l_desired,"\n",-torq_l,"\n",+np.dot(M,utt_desired),"\n",-Moment_tip
-            ## why they are the same?
-            applied_force_by_actuator_1= applied_torque_by_actuator[1][0]/(1*da*np.cos(np.pi/4))
+            applied_force_by_actuator_1= (applied_torque_by_actuator[1][0]/(2*da*np.cos(np.pi/4)))
+            
             # applied_force_by_actuator_2= applied_torque_by_actuator[1]/(2*da*np.cos(pi/4))
             applied_pressure_by_actuator_1= applied_force_by_actuator_1/A0; # Pa
             # print applied_torque_by_actuator
