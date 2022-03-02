@@ -60,6 +60,9 @@ class pc_client(object):
         self.T=10 #sec duriation
         self.a=-10
         self.freq=0.01
+        self.kapa_0=0.0
+        self.flag_kapa0=1
+        self.u_star = np.array([[0],[self.kapa_0],[0]])
     def th_pub_raspi_client_pd(self):
         try:
             if self.flag_reset==1:
@@ -112,7 +115,8 @@ class pc_client(object):
             e2=np.array([[0],[1],[0]])# 3 by 1
             e3=np.array([[0],[0],[1]])# 3 by 1
             ### Geometric
-            L0=0.185*num_of_segments # total length m
+            L0=0.185
+            L=L*num_of_segments # total length m
             r0=0.075*np.sqrt(2)/2 # radius at the cross-section m
 
             ### need to double check ##
@@ -123,7 +127,7 @@ class pc_client(object):
             r2 = da*np.sqrt(2)/2*(e1-e2)# 3 by 1
             r3= da*np.cos(np.pi/4)*(-e1-e2)# 3 by 1
             r4 = da*np.sqrt(2)/2*(-e1+e2)# 3 by 1
-            db= L0/2*e3# 3 by 1, distance of the tip force to the COM m
+            # db= L0/2*e3# 3 by 1, distance of the tip force to the COM m
             A0=np.pi*(r0**2) # cicular cross-section area
             rho=792 #density kg/m^3
                 ### momentum of inertia
@@ -137,12 +141,14 @@ class pc_client(object):
             Kb=np.array([[E*Ixx,0,0],[0,E*Iyy,0],[0,0,G*Izz]])#Stiffness matrix for bending(d1,d2) and extension(d3) [N.m^2]
             tau=0 #ime period of free-end damping in x-y-z axes [s]
             Bb = np.dot(Kb,tau*np.eye(3)) #Damping matrix corresponding to bending and extension [N.m^2.s]
-            Force_tip = 0*e3 #zeros(1,3) Force from interaction with environment (FSR) [N]
+            # Force_tip = 0*e3 #zeros(1,3) Force from interaction with environment (FSR) [N]
             # print Force_tip,db
-            Moment_tip=np.cross(np.reshape(db,(1,3)),np.reshape(Force_tip,(1,3))).reshape(3,1)#Moment from interaction with the environment (FSR) [Nm]
+            # Moment_tip=np.cross(np.reshape(db,(1,3)),np.reshape(Force_tip,(1,3))).reshape(3,1)#Moment from interaction with the environment (FSR) [Nm]
             g=np.array([[0],[0],[-9.81]]) #gravity accelaration [m/s^2]
-            Force_gravity=rho*A0*g #force per unit length at each cross-section [N]
+            Force_gravity=rho*A0*g*L0 #force per unit length at each cross-section [N]
+            
             u_star = np.array([[0],[0],[0]]) #undeformed state of u [1/m]
+
             a = self.a #amplitude of bending limited by the design and worksapce
             freq = self.freq #frequency of bending limited by air pressure speed [Hz]
             w = 2*np.pi*freq
@@ -170,9 +176,28 @@ class pc_client(object):
             # ### Gathering base position for 1st segment
             # x0=self.array4setswithrotation[0]
             # z0=self.array4setswithrotation[2]
-            u_y=0.0
-            u_y=2*(xi-x0)/((xi-x0)**2+(zi-z0)**2)
-            u=np.array([[0],[u_y],[0]])
+            if self.flag_kapa0 == 1:
+                self.kapa_0=2*(xi-x0)/((xi-x0)**2+(zi-z0)**2)
+                self.u_star = np.array([[0],[self.kapa_0],[0]])
+                self.flag_kapa0=0
+            kapa=0.0
+            kapa=2*(xi-x0)/((xi-x0)**2+(zi-z0)**2)
+            theta=0.0
+            theta= np.arcsin(kapa*(zi-z0))
+                # COM location over time
+            x0_c=x0
+            y0_c=y0
+            z0_c=z0+L/2
+            x_c=(1-np.cos(theta/2))/kapa
+            y_c=y0
+            z_c=np.sin(theta/2)/kapa
+                #New moment
+            db=np.array([x_c-x0_c,y_c-y0_c,z_c-z0_c])# 1by3 
+            xyzi_minus_xyz0=np.array([xi-x0,yi-y0,zi-z0])
+            Moment_grav=np.cross(db,np.reshape(np.dot(R,Force_gravity),(1,3))).reshape(3,1)            
+            Moment_tip=np.cross(xyzi_minus_xyz0,np.reshape(np.dot(R,Force_tip),(1,3))).reshape(3,1)
+
+            u=np.array([[0],[kapa],[0]])
             torq_l=np.dot(Kb,(u-u_star))
             K=Kb
             torq_l_desired = np.dot(K,(u_desired-u_star))

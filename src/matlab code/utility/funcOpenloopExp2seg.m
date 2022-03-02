@@ -67,6 +67,11 @@ par.ud00=NoLoad(1:end,26);
 par.ud10=NoLoad(1:end,27);
 par.ud20=NoLoad(1:end,28);
 end
+if size(NoLoad,2)>=29
+par.moment00=NoLoad(1:end,29);
+par.moment10=NoLoad(1:end,30);
+par.moment20=NoLoad(1:end,31);
+end
 switch exp_case
     case 1
         par_set.trial1=par;

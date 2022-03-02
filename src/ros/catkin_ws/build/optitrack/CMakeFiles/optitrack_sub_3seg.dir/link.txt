@@ -1,0 +1,1 @@
+/usr/bin/c++   -std=c++11   CMakeFiles/optitrack_sub_3seg.dir/src/mocap_3seg.cpp.o  -o /home/pi/rosTest/catkin_ws/devel/lib/optitrack/optitrack_sub_3seg -rdynamic /usr/local/lib/libzmq.so -Wl,-rpath,/usr/local/lib 

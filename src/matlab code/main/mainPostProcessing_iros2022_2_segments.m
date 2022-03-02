@@ -58,12 +58,12 @@ time_vec=testData.pm_MPa(:,1)
 testData=funcCalculateuandR(testData) 
 figure
 subplot(3,1,1)
-scatter(time_vec,testData.ud10)
+scatter(time_vec,testData.ud00)
 hold on
 scatter(time_vec,testData.u10)
 ylabel('curvature')
 xlabel('time sec')
-legend('ud_y','u_y')
+legend('kapa_d','kapa_m')
 subplot(3,1,2)
 scatter(time_vec,testData.pd_psi(:,3))
 hold on
@@ -73,12 +73,19 @@ ylabel('Pressure psi')
 legend('pd','pm')
 xlabel('time sec')
 subplot(3,1,3)
+scatter(time_vec,testData.moment00)
+hold on
+scatter(time_vec,testData.moment10)
+hold on
+scatter(time_vec,testData.moment20)
+legend('u','f','tau')
+
 % scatter(time_vec,testData.eul(:,1))
 % hold on
-scatter(time_vec,testData.eul(:,2))
+% scatter(time_vec,testData.eul(:,2))
 hold on
 % scatter(time_vec,testData.eul(:,3))
 % hold on
-ylabel('angle rad')
-legend('y')
+% ylabel('angle rad')
+% legend('y')
 xlabel('time sec')
