@@ -1,0 +1,8 @@
+prefix=/home/pi/rosTest/catkin_ws/install
+
+Name: optitrack
+Description: Description of optitrack
+Version: 0.0.0
+Cflags: -I${prefix}/include
+Libs: -L${prefix}/lib 
+Requires: 

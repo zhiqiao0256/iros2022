@@ -1,0 +1,2 @@
+optitrack:ros_zeromq_tutorial:vrpn_client_ros
+-DCATKIN_DEVEL_PREFIX=/home/pi/rosTest/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/pi/rosTest/catkin_ws/install -G Unix Makefiles
